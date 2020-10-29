@@ -16,8 +16,6 @@ namespace StiNeResults
 
         static void Main (string [] args)
         {
-            _driver = new FirefoxDriver ("./");
-
             if (!Init ())
                 return;
             if (!Login ())
@@ -34,6 +32,7 @@ namespace StiNeResults
             {
                 try
                 {
+                    _driver = new FirefoxDriver ("./");
                     _driver.Navigate ().GoToUrl ("https://www.stine.uni-hamburg.de/");
                     if (_driver.Title.StartsWith ("Universität Hamburg"))
                     {
