@@ -4,6 +4,7 @@ Automatically notifies of new StiNe results.
 # How to use
 This is a .NET Core 3.1 application and can be build with the corresponding SDK.
 You need Firefox installed and need to put the _geckodriver.exe_ next to the built executable of this program.
+I don't know if there is a way to use the _geckodriver_ in Linux.
 
 ## Configuration
 You can provide a _config_ file (called _config_), in order to avoid having to enter your credentials every time.
