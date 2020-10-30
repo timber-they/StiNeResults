@@ -32,6 +32,8 @@ namespace StiNeResults
             {
                 try
                 {
+                    _driver?.Close ();
+                    _driver?.Dispose ();
                     _driver = new FirefoxDriver ("./");
                     _driver.Navigate ().GoToUrl ("https://www.stine.uni-hamburg.de/");
                     if (_driver.Title.StartsWith ("Universität Hamburg"))
@@ -222,7 +224,7 @@ namespace StiNeResults
             do
                 try
                 {
-                    ergebnisse           =   _driver.FindElements (By.TagName ("tr")).Skip (1).ToList ();
+                    ergebnisse = _driver.FindElements (By.TagName ("tr")).Skip (1).ToList ();
                     if (ergebnisse.Count == 0)
                         throw new Exception ("Invalid tab");
                     initialErgebnisCount ??= ergebnisse.Count;
