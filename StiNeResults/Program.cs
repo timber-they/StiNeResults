@@ -12,10 +12,12 @@ namespace StiNeResults
     class Program
     {
         private static FirefoxDriver _driver;
-        private const  int           TRIES = 10;
+        private static Config        _config;
 
         static void Main (string [] args)
         {
+            _config = GetConfig ();
+
             if (!Init ())
                 return;
             if (!Login ())
@@ -28,7 +30,7 @@ namespace StiNeResults
 
         private static bool Init ()
         {
-            for (var i = 0; i < TRIES; i++)
+            for (var i = 0; i < _config.Tries; i++)
             {
                 try
                 {
@@ -49,7 +51,7 @@ namespace StiNeResults
                     Console.Error.WriteLine ($"Init threw an exception: {e}, {e.StackTrace}");
                 }
 
-                Console.Error.WriteLine ($"Couldn't init, try {i + 1}/{TRIES}");
+                Console.Error.WriteLine ($"Couldn't init, try {i + 1}/{_config.Tries}");
             }
 
             Console.Error.WriteLine ("Couldn't init");
@@ -59,7 +61,7 @@ namespace StiNeResults
 
         private static bool Login ()
         {
-            for (var i = 0; i < TRIES; i++)
+            for (var i = 0; i < _config.Tries; i++)
             {
                 if (LoginTry ())
                 {
@@ -67,7 +69,7 @@ namespace StiNeResults
                     return true;
                 }
 
-                Console.Error.WriteLine ($"Couldn't authenticate, try {i + 1}/{TRIES}");
+                Console.Error.WriteLine ($"Couldn't authenticate, try {i + 1}/{_config.Tries}");
                 try
                 {
                     _driver.Navigate ().Refresh ();
@@ -87,8 +89,6 @@ namespace StiNeResults
             {
                 try
                 {
-                    var config = GetConfig ();
-
                     var user = _driver.FindElement (By.Id ("field_user"));
                     if (user == null)
                     {
@@ -96,7 +96,7 @@ namespace StiNeResults
                         return false;
                     }
 
-                    user.SendKeys (config.User);
+                    user.SendKeys (_config.User);
 
                     var password = _driver.FindElement (By.Id ("field_pass"));
                     if (password == null)
@@ -105,7 +105,7 @@ namespace StiNeResults
                         return false;
                     }
 
-                    password.SendKeys (config.Password);
+                    password.SendKeys (_config.Password);
 
                     var login = _driver.FindElement (By.Id ("logIn_btn"));
                     if (login == null)
@@ -147,10 +147,21 @@ namespace StiNeResults
             if (File.Exists ("config"))
             {
                 var content = File.ReadAllLines ("config");
-                if (content.Length != 2)
+                if (content.Length < 2)
                     Console.Error.WriteLine ("Invalid config file");
                 else
-                    return new Config {User = content [0], Password = content [1]};
+                {
+                    var tries = 10;
+                    if (content.Length > 2 && !int.TryParse (content [2], out tries))
+                        Console.Error.WriteLine ("Invalid tries parameter");
+                    else
+                        return new Config
+                        {
+                            User     = content [0],
+                            Password = content [1],
+                            Tries    = tries
+                        };
+                }
             }
 
             Console.WriteLine ("Enter username");
@@ -163,7 +174,7 @@ namespace StiNeResults
 
         private static bool Navigate ()
         {
-            for (var i = 0; i < TRIES; i++)
+            for (var i = 0; i < _config.Tries; i++)
             {
                 if (NavigateTry ())
                 {
@@ -171,7 +182,7 @@ namespace StiNeResults
                     return true;
                 }
 
-                Console.WriteLine ($"Navigate failed, try {i + 1}/{TRIES}");
+                Console.WriteLine ($"Navigate failed, try {i + 1}/{_config.Tries}");
                 try
                 {
                     _driver.Navigate ().Refresh ();

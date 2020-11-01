@@ -4,5 +4,6 @@ namespace StiNeResults
     {
         public string User;
         public string Password;
+        public int    Tries;
     }
 }
