@@ -259,7 +259,7 @@ namespace StiNeResults
                     if (!(Init () && Login () && Navigate ()))
                         return;
                 }
-            while (ergebnisse == null || ergebnisse.Count == initialErgebnisCount);
+            while (ergebnisse == null || ergebnisse.Count <= initialErgebnisCount);
 
             Console.WriteLine ("Got new Ergebnis!");
             Notify ();
