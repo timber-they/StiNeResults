@@ -223,6 +223,7 @@ namespace StiNeResults
                 catch (Exception e)
                 {
                     Console.Error.WriteLine ($"Navigate threw an exception: {e}, {e.StackTrace}");
+                    Init ();
                     return false;
                 }
             }
