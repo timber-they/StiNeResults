@@ -186,6 +186,7 @@ namespace StiNeResults
                 try
                 {
                     _driver.Navigate ().Refresh ();
+                    DismissDialog ();
                 }
                 catch (Exception e)
                 {
@@ -223,7 +224,6 @@ namespace StiNeResults
                 catch (Exception e)
                 {
                     Console.Error.WriteLine ($"Navigate threw an exception: {e}, {e.StackTrace}");
-                    Init ();
                     return false;
                 }
             }
