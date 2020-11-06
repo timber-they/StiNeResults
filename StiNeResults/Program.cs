@@ -18,6 +18,8 @@ namespace StiNeResults
         {
             _config = GetConfig ();
 
+            if (!Start ())
+                return;
             if (!Init ())
                 return;
             if (!Login ())
@@ -28,7 +30,7 @@ namespace StiNeResults
             AnalyzeErgebnisse ();
         }
 
-        private static bool Init ()
+        private static bool Start ()
         {
             for (var i = 0; i < _config.Tries; i++)
             {
@@ -37,6 +39,28 @@ namespace StiNeResults
                     _driver?.Close ();
                     _driver?.Dispose ();
                     _driver = new FirefoxDriver ("./");
+                    _driver.Manage ()?.Window?.Maximize ();
+
+                    Console.WriteLine ("Started");
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    Console.Error.WriteLine ($"Start threw an exception: {e}, {e.StackTrace}");
+                }
+
+                Console.Error.WriteLine ($"Couldn't start, try {i}/{_config.Tries}");
+            }
+
+            return false;
+        }
+
+        private static bool Init ()
+        {
+            for (var i = 0; i < _config.Tries; i++)
+            {
+                try
+                {
                     _driver.Navigate ().GoToUrl ("https://www.stine.uni-hamburg.de/");
                     if (_driver.Title.StartsWith ("Universität Hamburg"))
                     {
