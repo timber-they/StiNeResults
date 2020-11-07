@@ -52,7 +52,7 @@ namespace StiNeResults
                 }
                 catch (Exception e)
                 {
-                    Console.Error.WriteLine ($"Start threw an exception: {e}, {e.StackTrace}");
+                    Console.Error.WriteLine ($"Start threw an exception: {e}");
                 }
 
                 Console.Error.WriteLine ($"Couldn't start, try {i}/{_config.Tries}");
@@ -80,7 +80,7 @@ namespace StiNeResults
                 }
                 catch (Exception e)
                 {
-                    Console.Error.WriteLine ($"Init threw an exception: {e}, {e.StackTrace}");
+                    Console.Error.WriteLine ($"Init threw an exception: {e}");
                 }
 
                 Console.Error.WriteLine ($"Couldn't init, try {i + 1}/{_config.Tries}");
@@ -145,7 +145,7 @@ namespace StiNeResults
                 }
                 catch (Exception e)
                 {
-                    Console.Error.WriteLine ($"Login threw an exception: {e}, {e.StackTrace}");
+                    Console.Error.WriteLine ($"Login threw an exception: {e}");
                     return false;
                 }
             }
@@ -161,7 +161,7 @@ namespace StiNeResults
             catch (Exception e)
             {
                 Console.WriteLine ("No dialog to dismiss");
-                Debug.WriteLine ($"Dismissing the dialog threw an exception: {e.Message}, {e.StackTrace}");
+                Debug.WriteLine ($"Dismissing the dialog threw an exception: {e.Message}");
             }
         }
 
@@ -213,7 +213,7 @@ namespace StiNeResults
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine ($"Refresh threw an exception: {e}, {e.StackTrace}");
+                    Console.WriteLine ($"Refresh threw an exception: {e}");
                     return false;
                 }
             }
@@ -247,7 +247,7 @@ namespace StiNeResults
                 }
                 catch (Exception e)
                 {
-                    Console.Error.WriteLine ($"Navigate threw an exception: {e}, {e.StackTrace}");
+                    Console.Error.WriteLine ($"Navigate threw an exception: {e}");
                     return false;
                 }
             }
@@ -281,7 +281,7 @@ namespace StiNeResults
                 }
                 catch (Exception e)
                 {
-                    Console.Error.WriteLine ($"Ergebnisse threw an exception: {e}, {e.StackTrace}");
+                    Console.Error.WriteLine ($"Ergebnisse threw an exception: {e}");
                     if (!(Init () && Login () && Navigate ()))
                         return;
                 }
