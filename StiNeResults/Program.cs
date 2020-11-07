@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
 using OpenQA.Selenium;
 using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.Support.UI;
 
 
 namespace StiNeResults
@@ -12,6 +14,7 @@ namespace StiNeResults
     class Program
     {
         private static FirefoxDriver _driver;
+        private static WebDriverWait _wait;
         private static Config        _config;
 
         static void Main (string [] args)
@@ -39,7 +42,10 @@ namespace StiNeResults
                     _driver?.Close ();
                     _driver?.Dispose ();
                     _driver = new FirefoxDriver ("./");
+                    _wait   = new WebDriverWait (_driver, TimeSpan.FromSeconds (30));
                     _driver.Manage ()?.Window?.Maximize ();
+                    if (_driver.Manage ()?.Timeouts () != null)
+                        _driver.Manage ().Timeouts ().ImplicitWait = TimeSpan.FromMilliseconds (20);
 
                     Console.WriteLine ("Started");
                     return true;
@@ -62,6 +68,8 @@ namespace StiNeResults
                 try
                 {
                     _driver.Navigate ().GoToUrl ("https://www.stine.uni-hamburg.de/");
+                    DismissDialog ();
+                    _wait.Until (driver => driver.Title.StartsWith ("Universität Hamburg"));
                     if (_driver.Title.StartsWith ("Universität Hamburg"))
                     {
                         Console.WriteLine ("Initialized");
@@ -93,18 +101,7 @@ namespace StiNeResults
                     return true;
                 }
 
-                Console.Error.WriteLine ($"Couldn't authenticate, try {i + 1}/{_config.Tries}");
-                try
-                {
-                    _driver.Navigate ().Refresh ();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine ($"Refresh threw an exception: {e}, {e.StackTrace}");
-                    return false;
-                }
-
-                DismissDialog ();
+                Init ();
             }
 
             return false;
@@ -139,6 +136,7 @@ namespace StiNeResults
                     }
 
                     login.Click ();
+                    _wait.Until (driver => driver.FindElements (By.Id ("field_user")).Count == 0);
                     if (_driver.FindElements (By.Id ("field_user")).Count == 0)
                         return true;
 
@@ -162,7 +160,8 @@ namespace StiNeResults
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine ($"Dismissing the alert threw an exception: {e}, {e.StackTrace}");
+                Console.WriteLine ("No dialog to dismiss");
+                Debug.WriteLine ($"Dismissing the dialog threw an exception: {e.Message}, {e.StackTrace}");
             }
         }
 
@@ -234,6 +233,7 @@ namespace StiNeResults
                     }
 
                     studium.Click ();
+                    _wait.Until (driver => _driver.FindElements (By.LinkText ("Prüfungsergebnisse")).Count != 0);
 
                     var prüfungsergebnisse = _driver.FindElement (By.LinkText ("Prüfungsergebnisse"));
                     if (prüfungsergebnisse == null)
@@ -260,6 +260,7 @@ namespace StiNeResults
             do
                 try
                 {
+                    _wait.Until (driver => _driver.FindElements (By.TagName ("tr")).Count != 0);
                     ergebnisse = _driver.FindElements (By.TagName ("tr")).Skip (1).ToList ();
                     if (ergebnisse.Count == 0)
                         throw new Exception ("Invalid tab");
