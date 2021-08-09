@@ -110,24 +110,6 @@ namespace StiNeResults
             {
                 try
                 {
-                    var user = _driver.FindElement (By.Id ("field_user"));
-                    if (user == null)
-                    {
-                        Console.Error.WriteLine ("User field not found");
-                        return false;
-                    }
-
-                    user.SendKeys (_config.User);
-
-                    var password = _driver.FindElement (By.Id ("field_pass"));
-                    if (password == null)
-                    {
-                        Console.Error.WriteLine ("Password field not found");
-                        return false;
-                    }
-
-                    password.SendKeys (_config.Password);
-
                     var login = _driver.FindElement (By.Id ("logIn_btn"));
                     if (login == null)
                     {
@@ -136,8 +118,45 @@ namespace StiNeResults
                     }
 
                     login.Click ();
-                    _wait.Until (driver => driver.FindElements (By.Id ("field_user")).Count == 0);
-                    if (_driver.FindElements (By.Id ("field_user")).Count == 0)
+                    _wait.Until (driver => driver.FindElements (By.Id ("Username")).Count != 0);
+                    var user = _driver.FindElement (By.Id ("Username"));
+                    if (user == null)
+                    {
+                        Console.Error.WriteLine ("User field not found");
+                        return false;
+                    }
+
+                    user.SendKeys (_config.User);
+
+                    var password = _driver.FindElement (By.Id ("Password"));
+                    if (password == null)
+                    {
+                        Console.Error.WriteLine ("Password field not found");
+                        return false;
+                    }
+
+                    password.SendKeys (_config.Password);
+
+                    var remember = _driver.FindElement (By.Id ("RememberLogin"));
+                    if (remember == null)
+                    {
+                        Console.Error.WriteLine ("Remember field not found");
+                        return false;
+                    }
+
+                    remember.Click ();
+
+                    var login2 = _driver.FindElement (By.ClassName ("btn-primary"));
+                    if (login2 == null)
+                    {
+                        Console.Error.WriteLine ("Login2 button not found");
+                        return false;
+                    }
+
+                    login2.Click ();
+
+                    _wait.Until (driver => driver.FindElements (By.Id ("Username")).Count == 0);
+                    if (_driver.FindElements (By.Id ("Username")).Count == 0)
                         return true;
 
                     Console.Error.WriteLine ("Login unsuccessful");
