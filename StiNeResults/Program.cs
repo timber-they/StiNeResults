@@ -110,6 +110,7 @@ namespace StiNeResults
             {
                 try
                 {
+                    _wait.Until (driver => driver.FindElements (By.Id ("logIn_btn")).Count != 0);
                     var login = _driver.FindElement (By.Id ("logIn_btn"));
                     if (login == null)
                     {
@@ -284,7 +285,7 @@ namespace StiNeResults
                     if (ergebnisse.Count == 0)
                         throw new Exception ("Invalid tab");
                     initialErgebnisCount ??= ergebnisse.Count;
-                    Console.WriteLine ($"Got {ergebnisse.Count} Ergebnisse");
+                    Console.WriteLine ($"Got {ergebnisse.Count} result{(ergebnisse.Count == 1 ? "" : "s")}");
                     foreach (var cols in ergebnisse.Select (ergebnis => ergebnis.FindElements (By.TagName ("td"))))
                     {
                         if (cols.Count != 5)
@@ -293,7 +294,7 @@ namespace StiNeResults
                             continue;
                         }
 
-                        Console.WriteLine ($"Ergebnis für '{cols [0].Text}': {cols [2].Text}");
+                        Console.WriteLine ($"Result for '{cols [0].Text.Replace ('\n', ' ').Replace ('\r', ' ')}': {cols [2].Text}");
                     }
 
                     _driver.Navigate ().Refresh ();
